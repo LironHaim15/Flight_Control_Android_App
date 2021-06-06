@@ -4,8 +4,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
     <data>
         <variable
-            name="ViewModel"
-            type="com.example.flight_control_android_app.view_models.ViewModel" />
+            name="Connect"
+            type="com.example.flight_control_android_app.models.Model" />
     </data>
 
     <LinearLayout
@@ -78,6 +78,16 @@
                 app:layout_constraintTop_toBottomOf="@+id/port"
                 app:layout_constraintVertical_bias="0.0" />
 
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@={Connect.status}"
+                app:layout_constraintBottom_toTopOf="@+id/ip"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -100,8 +110,8 @@
                 style="@style/Widget.AppCompat.SeekBar"
                 android:layout_width="329dp"
                 android:layout_height="22dp"
-                android:max="1000"
-                android:min="-1000"
+                android:max="1000000"
+                android:min="-1000000"
                 android:progressTint="#11FB19"
                 android:thumb="@android:drawable/presence_online"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -116,7 +126,7 @@
                 android:layout_width="306dp"
                 android:layout_height="40dp"
                 android:layout_marginStart="212dp"
-                android:max="1000"
+                android:max="1000000"
                 android:min="0"
                 android:progressTint="#11FB19"
                 android:rotation="270"
@@ -151,6 +161,33 @@
                 app:layout_constraintStart_toStartOf="@+id/throttleBar"
                 app:layout_constraintTop_toTopOf="@+id/throttleBar"
                 app:layout_constraintVertical_bias="0.476" />
+
+            <Button
+                android:id="@+id/rudderResetButton"
+                android:layout_width="97dp"
+                android:layout_height="63dp"
+                android:backgroundTint="#285FA1"
+                android:text="Reset Rudder"
+                app:layout_constraintBottom_toBottomOf="@+id/draggableJoystick"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.05"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.89" />
+
+            <Button
+                android:id="@+id/throttleResetButton"
+                android:layout_width="120dp"
+                android:layout_height="63dp"
+                android:backgroundTint="#285FA1"
+                android:text="Reset Throttle"
+                app:layout_constraintBottom_toBottomOf="@+id/draggableJoystick"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.945"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.042" />
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

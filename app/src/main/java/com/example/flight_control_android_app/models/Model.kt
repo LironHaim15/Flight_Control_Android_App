@@ -1,50 +1,57 @@
 package com.example.flight_control_android_app.models
 
+import android.R.attr
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
+import java.io.IOException
 import java.io.OutputStream
-import java.net.InetAddress
+import java.net.InetSocketAddress
 import java.net.Socket
-import java.lang.Thread
 import java.nio.charset.Charset
+
 
 class Model {
     private var connected: Boolean = false
     private var client : Socket? = null
     private var writer: OutputStream? = null
     private var thread: Thread? = null
-
+    var status = "Disconnected"
     private var aileron:Float = 0.0f
     private var elevator:Float = 0.0f
     private var throttle:Float = 0.0f
     private var rudder:Float = 0.0f
 
-    fun connect(ip:String ,port:Int) {
+    fun connect(ip:String ,port:Int){
         try {
             val policy = ThreadPolicy.Builder().permitAll().build()
             StrictMode.setThreadPolicy(policy)
-            this.client = Socket(ip,port)
-            this.writer = this.client!!.getOutputStream()
-            this.thread = Thread(this::threadFunc)
+            this.client = Socket()
+            this.thread = Thread {
+                threadFunc(ip, port)
+            }
             this.thread!!.start()
-            this.connected = true
-
-        } catch (e: Exception) {
-            println(e)
-            this.connected = false
         }
+        catch (e: Exception){}
     }
 
-    private fun threadFunc(){
+    @Throws(IOException::class)
+    private fun threadFunc(ip:String ,port:Int){
+        try {
+            this.client!!.connect(InetSocketAddress(ip, port), 500)
+            this.writer = this.client!!.getOutputStream()
+        }
+        catch (e: Exception){return}
+
         this.connected = true
+        this.status = "Connected"
         while (connected){
             try {
                 Thread.sleep(100)
                 this.sendValues()
             }
             catch (e: Exception){
-                println(e)
                 this.connected = false
+                this.status = "Disconnected"
             }
         }
     }
@@ -54,33 +61,44 @@ class Model {
         writer?.write(("set /controls/engines/current-engine/throttle " + this.throttle + "\r\n").toByteArray(Charset.defaultCharset()))
         writer?.write(("set /controls/flight/rudder " + this.rudder + "\r\n").toByteArray(Charset.defaultCharset()))
     }
-    fun setAileron(a:Float){
+    private fun setAileron(a:Float){
         this.aileron = a
     }
-    fun setElevator(e:Float){
+    private fun setElevator(e:Float){
         this.elevator = e
     }
-    fun setThrottle(t:Float){
+    private fun setThrottle(t:Float){
         this.throttle = t
     }
-    fun setRudder(r:Float){
+    private fun setRudder(r:Float){
         this.rudder = r
     }
 
     fun disconnect(){
         if (connected) {
             try {
+                this.status = "Disconnected"
                 this.connected = false
                 this.thread?.join()
                 this.client?.close()
             }
             catch (e: Exception){
                 this.connected = false
+                this.status = "Disconnected"
             }
         }
     }
 
     fun isConnected():Boolean{
         return this.connected
+    }
+
+    fun updateValues(value:Float, barType: String){
+        when (barType) {
+            "Rudder" -> setRudder(value)
+            "Throttle" -> setThrottle(value)
+            "Aileron" -> setAileron(value)
+            "Elevator" -> setElevator(value)
+        }
     }
 }

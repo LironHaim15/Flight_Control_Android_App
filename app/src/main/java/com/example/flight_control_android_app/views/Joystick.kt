@@ -16,7 +16,7 @@ class Joystick @JvmOverloads constructor(
     private var headCenter: PointF = PointF()
     private var baseCorner: PointF = PointF()
     private var center: PointF = PointF()
-    var onChange: ((Float, Float)->Unit )? = null
+    var onChange: ((Float, Float) -> Unit)? = null
     private lateinit var joystickHead :Bitmap
     private lateinit var joystickBase :Bitmap
     private var paint = Paint()
@@ -28,7 +28,7 @@ class Joystick @JvmOverloads constructor(
         val jsHead = BitmapFactory.decodeResource(resources, R.drawable.joystick_grey)
         val jsBase = BitmapFactory.decodeResource(resources, R.drawable.joystick_base)
         smallerSide = min(width,height)
-        jsHeadDiameter = (smallerSide/4).toInt()
+        jsHeadDiameter = (smallerSide/4)
         jsBaseDiameter = (smallerSide/1.5).toInt()
         headCenter = PointF((width/2f)-(jsHeadDiameter/2), (height/2f)-(jsHeadDiameter/2))
         baseCorner = PointF((width/2f)-(jsBaseDiameter/2), (height/2f)-(jsBaseDiameter/2))
@@ -38,11 +38,13 @@ class Joystick @JvmOverloads constructor(
         joystickHead = Bitmap.createScaledBitmap(jsHead,jsHeadDiameter,jsHeadDiameter,false)
     }
 
+    // on draw event
     override fun onDraw(canvas: Canvas) {
         canvas.drawBitmap(joystickBase, baseCorner.x ,baseCorner.y ,paint)
         canvas.drawBitmap(joystickHead, headCenter.x, headCenter.y ,paint)
     }
 
+    // on touch event, call touchUP and touchMove
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         when (event?.action) {
             MotionEvent.ACTION_MOVE -> touchMove(event.x, event.y)
@@ -51,6 +53,8 @@ class Joystick @JvmOverloads constructor(
         return true
     }
 
+    // moving the joystick event. calculate the the new aileron and elevator according to the new
+    // joystick position.
     private fun touchMove(x: Float, y: Float) {
         val jsHeadRadius :Int = jsHeadDiameter/2
         val jsBaseRadius :Int = jsBaseDiameter/2
@@ -64,6 +68,7 @@ class Joystick @JvmOverloads constructor(
         invalidate()
     }
 
+    // lifting finger from screen event. bring joystick back to center.
     private fun touchUp(x: Float, y: Float) {
         headCenter.x = center.x
         headCenter.y = center.y
