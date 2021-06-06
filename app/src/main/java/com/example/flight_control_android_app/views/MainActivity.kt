@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    //
+    // reset function for seekers. set the value back to 0.
     private fun resetClickButton(seekBar: SeekBar,barType: String) {
         seekBar.progress = 0
         vm.updateValues(0f, barType)

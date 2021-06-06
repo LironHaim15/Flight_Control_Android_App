@@ -1,6 +1,5 @@
 package com.example.flight_control_android_app.models
 
-import android.R.attr
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import java.io.IOException

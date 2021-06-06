@@ -2,11 +2,6 @@
 <layout xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <data>
-        <variable
-            name="Connect"
-            type="com.example.flight_control_android_app.models.Model" />
-    </data>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -78,17 +73,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/port"
                 app:layout_constraintVertical_bias="0.0" />
 
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@={Connect.status}"
-                app:layout_constraintBottom_toTopOf="@+id/ip"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -108,18 +92,18 @@
             <SeekBar
                 android:id="@+id/rudderBar"
                 style="@style/Widget.AppCompat.SeekBar"
-                android:layout_width="329dp"
-                android:layout_height="22dp"
+
+                android:layout_width="410dp"
+                android:layout_height="33dp"
                 android:max="1000000"
                 android:min="-1000000"
                 android:progressTint="#11FB19"
                 android:thumb="@android:drawable/presence_online"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.496"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/draggableJoystick"
-                app:layout_constraintVertical_bias="0.955" />
+                app:layout_constraintVertical_bias="0.96" />
 
             <SeekBar
                 android:id="@+id/throttleBar"
@@ -132,35 +116,38 @@
                 android:rotation="270"
                 android:thumb="@android:drawable/presence_online"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="H,3:1"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintHorizontal_bias="0.065"
                 app:layout_constraintStart_toStartOf="@+id/draggableJoystick"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.496" />
 
             <TextView
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
+                android:layout_height="0dp"
+                android:layout_marginBottom="32dp"
                 android:text="Rudder"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"
                 app:layout_constraintBottom_toBottomOf="@+id/rudderBar"
                 app:layout_constraintEnd_toEndOf="@+id/rudderBar"
-                app:layout_constraintHorizontal_bias="0.502"
+                app:layout_constraintHorizontal_bias="0.498"
                 app:layout_constraintStart_toStartOf="@+id/rudderBar" />
 
             <TextView
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="152dp"
                 android:rotation="90"
                 android:text="Throttle"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                app:layout_constraintBottom_toBottomOf="@+id/throttleBar"
-                app:layout_constraintStart_toStartOf="@+id/throttleBar"
-                app:layout_constraintTop_toTopOf="@+id/throttleBar"
-                app:layout_constraintVertical_bias="0.476" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="@+id/draggableJoystick"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.523" />
 
             <Button
                 android:id="@+id/rudderResetButton"
@@ -170,10 +157,10 @@
                 android:text="Reset Rudder"
                 app:layout_constraintBottom_toBottomOf="@+id/draggableJoystick"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.05"
+                app:layout_constraintHorizontal_bias="0.079"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.89" />
+                app:layout_constraintVertical_bias="0.898" />
 
             <Button
                 android:id="@+id/throttleResetButton"
