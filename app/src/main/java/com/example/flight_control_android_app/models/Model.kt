@@ -14,8 +14,6 @@ class Model {
     private var connected: Boolean = false
     private var client : Socket? = null
     private var writer: OutputStream? = null
-    private var thread: Thread? = null
-    var status = "Disconnected"
     private var aileron:Float = 0.0f
     private var elevator:Float = 0.0f
     private var throttle:Float = 0.0f
@@ -27,14 +25,11 @@ class Model {
     fun connect(ip:String ,port:Int) {
         this.es?.execute {
             try {
-                //val policy = ThreadPolicy.Builder().permitAll().build()
-                //StrictMode.setThreadPolicy(policy)
                 this.client = Socket()
                 this.client!!.connect(InetSocketAddress(ip, port), 500)
                 this.writer = this.client!!.getOutputStream()
                 this.connected = true
-            } catch (e: Exception) {
-            }
+            } catch (e: Exception) {}
         }
     }
     private fun setAileron(a:Float){
@@ -49,51 +44,57 @@ class Model {
             )
             writer?.flush()
         }
-
     }
     private fun setElevator(e:Float){
         this.elevator = e
         if(!this.connected)
             return
-        this.es?.execute({
-            writer?.write(("set /controls/flight/elevator " + this.elevator + "\r\n").toByteArray(Charset.defaultCharset()))
+        this.es?.execute {
+            writer?.write(
+                ("set /controls/flight/elevator " + this.elevator + "\r\n").toByteArray(
+                    Charset.defaultCharset()
+                )
+            )
             writer?.flush()
-        })
+        }
     }
     private fun setThrottle(t:Float){
         this.throttle = t
         if(!this.connected)
             return
-        this.es?.execute({
-            writer?.write(("set /controls/engines/current-engine/throttle " + this.throttle + "\r\n").toByteArray(Charset.defaultCharset()))
+        this.es?.execute {
+            writer?.write(
+                ("set /controls/engines/current-engine/throttle " + this.throttle + "\r\n").toByteArray(
+                    Charset.defaultCharset()
+                )
+            )
             writer?.flush()
-        })
+        }
     }
     private fun setRudder(r:Float){
         this.rudder = r
         if(!this.connected)
             return
-        this.es?.execute({
-            writer?.write(("set /controls/flight/rudder " + this.rudder + "\r\n").toByteArray(Charset.defaultCharset()))
+        this.es?.execute {
+            writer?.write(
+                ("set /controls/flight/rudder " + this.rudder + "\r\n").toByteArray(
+                    Charset.defaultCharset()
+                )
+            )
             writer?.flush()
-        })
+        }
     }
 
     fun disconnect(){
         if (!connected) { return}
-     this.es?.execute({
-
-                try {
-                    this.status = "Disconnected"
-                    this.connected = false
-                    this.thread?.join()
-                    this.client?.close()
-                }
-                catch (e: Exception){
-                    this.connected = false
-                    this.status = "Disconnected"
-                }
-            })
+        this.es?.execute {
+            try {
+                this.connected = false
+                this.client?.close()
+            } catch (e: Exception) {
+                this.connected = false
+            }
+        }
     }
 
     fun isConnected():Boolean{

@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity() {
         seekBarListenerGeneric(throttleBar, "Throttle")
     }
 
+    // connect to the FG server
     private fun connectClickButton() {
         if (vm.isConnected()){
             displayMessage("Already connected! Please disconnect first.")
@@ -58,6 +59,7 @@ class MainActivity : AppCompatActivity() {
                 vm.connect(ipString, portInt)
             } catch (e: Exception) {}
 
+            // check if connected in a different thread than the main one.
             val thread = Thread {
                 Thread.sleep(600)
                 runOnUiThread {
@@ -72,6 +74,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // disconnect from the FG server
     private fun disconnectClickButton() {
         if (this.vm.isConnected()){
             this.vm.disconnect()
