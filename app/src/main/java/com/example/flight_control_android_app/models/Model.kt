@@ -1,15 +1,16 @@
 package com.example.flight_control_android_app.models
 
-import android.os.StrictMode
-import android.os.StrictMode.ThreadPolicy
-import java.io.IOException
+
 import java.io.OutputStream
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.nio.charset.Charset
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 
 class Model {
+    private var es : ExecutorService? = null
     private var connected: Boolean = false
     private var client : Socket? = null
     private var writer: OutputStream? = null
@@ -19,73 +20,80 @@ class Model {
     private var elevator:Float = 0.0f
     private var throttle:Float = 0.0f
     private var rudder:Float = 0.0f
-
-    fun connect(ip:String ,port:Int){
-        try {
-            val policy = ThreadPolicy.Builder().permitAll().build()
-            StrictMode.setThreadPolicy(policy)
-            this.client = Socket()
-            this.thread = Thread {
-                threadFunc(ip, port)
-            }
-            this.thread!!.start()
-        }
-        catch (e: Exception){}
+    init{
+        es= Executors.newSingleThreadExecutor()
     }
 
-    @Throws(IOException::class)
-    private fun threadFunc(ip:String ,port:Int){
-        try {
-            this.client!!.connect(InetSocketAddress(ip, port), 500)
-            this.writer = this.client!!.getOutputStream()
-        }
-        catch (e: Exception){return}
-
-        this.connected = true
-        this.status = "Connected"
-        while (connected){
+    fun connect(ip:String ,port:Int) {
+        this.es?.execute {
             try {
-                Thread.sleep(100)
-                this.sendValues()
-            }
-            catch (e: Exception){
-                this.connected = false
-                this.status = "Disconnected"
+                //val policy = ThreadPolicy.Builder().permitAll().build()
+                //StrictMode.setThreadPolicy(policy)
+                this.client = Socket()
+                this.client!!.connect(InetSocketAddress(ip, port), 500)
+                this.writer = this.client!!.getOutputStream()
+                this.connected = true
+            } catch (e: Exception) {
             }
         }
-    }
-    private fun sendValues() {
-        writer?.write(("set /controls/flight/aileron[0] " + this.aileron + "\r\n").toByteArray(Charset.defaultCharset()))
-        writer?.write(("set /controls/flight/elevator " + this.elevator + "\r\n").toByteArray(Charset.defaultCharset()))
-        writer?.write(("set /controls/engines/current-engine/throttle " + this.throttle + "\r\n").toByteArray(Charset.defaultCharset()))
-        writer?.write(("set /controls/flight/rudder " + this.rudder + "\r\n").toByteArray(Charset.defaultCharset()))
     }
     private fun setAileron(a:Float){
         this.aileron = a
+        if(!this.connected)
+            return
+        this.es?.execute {
+            writer?.write(
+                ("set /controls/flight/aileron[0] " + this.aileron + "\r\n").toByteArray(
+                    Charset.defaultCharset()
+                )
+            )
+            writer?.flush()
+        }
+
     }
     private fun setElevator(e:Float){
         this.elevator = e
+        if(!this.connected)
+            return
+        this.es?.execute({
+            writer?.write(("set /controls/flight/elevator " + this.elevator + "\r\n").toByteArray(Charset.defaultCharset()))
+            writer?.flush()
+        })
     }
     private fun setThrottle(t:Float){
         this.throttle = t
+        if(!this.connected)
+            return
+        this.es?.execute({
+            writer?.write(("set /controls/engines/current-engine/throttle " + this.throttle + "\r\n").toByteArray(Charset.defaultCharset()))
+            writer?.flush()
+        })
     }
     private fun setRudder(r:Float){
         this.rudder = r
+        if(!this.connected)
+            return
+        this.es?.execute({
+            writer?.write(("set /controls/flight/rudder " + this.rudder + "\r\n").toByteArray(Charset.defaultCharset()))
+            writer?.flush()
+        })
     }
 
     fun disconnect(){
-        if (connected) {
-            try {
-                this.status = "Disconnected"
-                this.connected = false
-                this.thread?.join()
-                this.client?.close()
-            }
-            catch (e: Exception){
-                this.connected = false
-                this.status = "Disconnected"
-            }
-        }
+        if (!connected) { return}
+     this.es?.execute({
+
+                try {
+                    this.status = "Disconnected"
+                    this.connected = false
+                    this.thread?.join()
+                    this.client?.close()
+                }
+                catch (e: Exception){
+                    this.connected = false
+                    this.status = "Disconnected"
+                }
+            })
     }
 
     fun isConnected():Boolean{
